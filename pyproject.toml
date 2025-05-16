@@ -1,0 +1,11 @@
+[build-system]
+requires = ["setuptools>=65.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "elf_dep_parser"
+version = "0.1.0"
+description = "Elf dependencies parser"
+
+[project.scripts]
+elf_dep_parser = "elf_dep_parser.cli.cli:main"
