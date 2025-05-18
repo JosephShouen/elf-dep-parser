@@ -12,8 +12,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def get_elf_dependencies(elf_path):
-    def collect_deps(filename):
-        print("Filename: " + filename)
+    def collect_deps(filename, is_root=True):
+        # print("Filename: " + filename)
         if filename in unique_deps:
             return
         unique_deps.add(filename)
@@ -27,19 +27,21 @@ def get_elf_dependencies(elf_path):
                     for tag in section.iter_tags():
                         if tag.entry.d_tag == 'DT_NEEDED':
                             deps.add(tag.needed)
-            print("Deps: " + str(deps))
+            # print("Deps: " + str(deps))
             for dep in deps:
                 dep_path = resolve_library_path(dep, filename)
                 if dep_path:
-                    collect_deps(dep_path)
-            result.append(os.path.basename(filename))
+                    collect_deps(dep_path, is_root=False)
+            if not is_root:
+                result.append(os.path.basename(filename))
 
     unique_deps = set()
     result = []
     collect_deps(elf_path)
+
     return result
 
-# только распространенные архитектуры, можно расширить
+# только распространенные архитектуры
 def detect_elf_architecture(elf_path: str) -> str:
     ARCH_MAP = {
         'EM_X86_64': 'x86-64',
