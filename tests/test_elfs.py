@@ -15,6 +15,7 @@ MINIMAL_ELF = bytes.fromhex(
     '0000 0000 0000 0000 0000 0000 0000 0000'  # e_shnum, e_shstrndx
 )
 
+
 class TestRealElf(unittest.TestCase):
     def test_real_elf(self):
         test_file = "/bin/true"
@@ -25,6 +26,7 @@ class TestRealElf(unittest.TestCase):
         self.assertIn("libc.so.6", " ".join(deps),
                       f"{test_file} должен зависеть от libc")
 
+
 class TestPureElfNoDeps(unittest.TestCase):
     def test_elf_without_dependencies(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -34,8 +36,10 @@ class TestPureElfNoDeps(unittest.TestCase):
                 f.write(MINIMAL_ELF)
 
             deps = get_elf_dependencies(str(elf_path))
-            self.assertEqual(deps, [],
-                             f"Ожидался пустой список зависимостей, получено: {deps}")
+            self.assertEqual(
+                deps, [],
+                f"Ожидался пустой список зависимостей, получено: {deps}")
+
 
 if __name__ == "__main__":
     unittest.main()

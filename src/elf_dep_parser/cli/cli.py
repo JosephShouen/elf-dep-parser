@@ -2,6 +2,7 @@ from elf_dep_parser.parser import get_elf_dependencies
 import argparse
 import os
 
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('elf_file', help='Путь к анализируемому ELF-файлу')
@@ -15,6 +16,7 @@ def main():
     print("Библиотеки в порядке загрузки:")
     for lib in reversed(deps):
         print(f"- {lib}")
+
 
 if __name__ == "__main__":
     main()

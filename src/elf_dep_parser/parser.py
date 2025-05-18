@@ -11,6 +11,7 @@ import glob
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def get_elf_dependencies(elf_path):
     def collect_deps(filename, is_root=True):
         # print("Filename: " + filename)
@@ -40,6 +41,7 @@ def get_elf_dependencies(elf_path):
     collect_deps(elf_path)
 
     return result
+
 
 # только распространенные архитектуры
 def detect_elf_architecture(elf_path: str) -> str:
@@ -85,6 +87,7 @@ def get_arch_specific_paths(arch: str) -> list:
     }
     return base_paths.get(arch, base_paths['default'])
 
+
 def get_ld_config_libs() -> Optional[dict]:
     try:
         result = subprocess.run(
@@ -128,7 +131,9 @@ def parse_ld_so_conf() -> List[str]:
 
 
 @lru_cache(maxsize=1024)
-def resolve_library_path(libname: str, elf_path: Optional[str] = None) -> Optional[str]:
+def resolve_library_path(
+        libname: str, elf_path: Optional[str] = None) \
+        -> Optional[str]:
     # check arch
     arch = detect_elf_architecture(elf_path)
 
