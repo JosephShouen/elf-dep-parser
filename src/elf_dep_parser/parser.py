@@ -39,16 +39,49 @@ def get_elf_dependencies(elf_path):
     collect_deps(elf_path)
     return result
 
+# только распространенные архитектуры, можно расширить
+def detect_elf_architecture(elf_path: str) -> str:
+    ARCH_MAP = {
+        'EM_X86_64': 'x86-64',
+        'EM_386': 'x86',
+        'EM_ARM': 'arm',
+        'EM_AARCH64': 'arm64',
+    }
 
-def get_standard_search_paths(elf_path: Optional[str] = None) -> List[str]:
-    return [
-        *(os.path.dirname(elf_path) if elf_path else []),
-        '/lib/x86_64-linux-gnu', '/usr/lib/x86_64-linux-gnu',
-        '/lib64', '/usr/lib64',
-        '/lib', '/usr/lib',
-        '/lib/i386-linux-gnu', '/usr/lib/i386-linux-gnu',
-        *os.getenv('LD_LIBRARY_PATH', '').split(':')
-    ]
+    with open(elf_path, 'rb') as f:
+        elf = ELFFile(f)
+        machine = elf.header['e_machine']
+        return ARCH_MAP.get(machine, 'unknown')
+
+
+def get_arch_specific_paths(arch: str) -> list:
+    base_paths = {
+        'x86-64': [
+            '/lib/x86_64-linux-gnu',
+            '/usr/lib/x86_64-linux-gnu',
+            '/lib64',
+            '/usr/lib64'
+        ],
+        'x86': [
+            '/lib/i386-linux-gnu',
+            '/usr/lib/i386-linux-gnu'
+        ],
+        'arm': [
+            '/lib/arm-linux-gnueabi',
+            '/usr/lib/arm-linux-gnueabi'
+        ],
+        'arm64': [
+            '/lib/aarch64-linux-gnu',
+            '/usr/lib/aarch64-linux-gnu'
+        ],
+        'default': [
+            '/lib',
+            '/usr/lib',
+            '/lib64',
+            '/usr/lib64'
+        ]
+    }
+    return base_paths.get(arch, base_paths['default'])
 
 def get_ld_config_libs() -> Optional[dict]:
     try:
@@ -94,18 +127,21 @@ def parse_ld_so_conf() -> List[str]:
 
 @lru_cache(maxsize=1024)
 def resolve_library_path(libname: str, elf_path: Optional[str] = None) -> Optional[str]:
-    # Check standard paths
-    for path in filter(None, get_standard_search_paths(elf_path)):
+    # check arch
+    arch = detect_elf_architecture(elf_path)
+
+    # check standard paths
+    for path in filter(None, get_arch_specific_paths(arch)):
         full_path = os.path.join(path, libname)
         if os.path.exists(full_path):
             return os.path.realpath(full_path)
 
-    # Check ldconfig cache
+    # check ldconfig cache
     ldconfig_libs = get_ld_config_libs()
     if ldconfig_libs and f"{libname} " in ldconfig_libs:
         return ldconfig_libs[f"{libname} "]
 
-    # Check ld.so.conf paths
+    # check ld.so.conf paths
     for path in parse_ld_so_conf():
         full_path = os.path.join(path, libname)
         if os.path.exists(full_path):
