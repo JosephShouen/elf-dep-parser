@@ -12,16 +12,25 @@
 - Поддерживает мультиархитектурные системы (x86-64, ARM, etc.)
 - Кэширование результатов для ускорения работы
 
-## Установка
+## Установка 
 
 ```bash
-pip install elf_dep_parser
+git clone https://github.com/JosephShouen/elf-dep-parser.git
+cd elf-dep-parser
+pip install -e .
 ```
 
-## Использование
-
+## CLI
 ```bash
-elf_dep_parser /path/to/your/executable
+elf_dep_parser /path/to/elf
+```
+
+## Библиотека
+```python
+from elf_dep_parser import get_elf_dependencies
+
+deps = get_elf_dependencies("/path/to/elf")
+print(f"Dependencies: {deps}")
 ```
 
 ## Пример вывода
