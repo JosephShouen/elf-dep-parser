@@ -1,6 +1,7 @@
-from elf_dep_parser.parser import get_ld_config_libs, parse_ld_so_conf
-from unittest.mock import patch, mock_open, MagicMock
 import unittest
+from unittest.mock import MagicMock, mock_open, patch
+
+from elf_dep_parser.parser import get_ld_config_libs, parse_ld_so_conf
 
 
 class TestLdConfig(unittest.TestCase):
@@ -8,14 +9,14 @@ class TestLdConfig(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.stdout = ""
 
-        with patch('subprocess.run', return_value=mock_result):
+        with patch("subprocess.run", return_value=mock_result):
             result = get_ld_config_libs()
             self.assertEqual(result, {})
 
 
 class TestParseLdSoConf(unittest.TestCase):
-    @patch('glob.glob')
-    @patch('builtins.open', mock_open(read_data=""))
+    @patch("glob.glob")
+    @patch("builtins.open", mock_open(read_data=""))
     def test_empty_configs(self, mock_glob):
         mock_glob.return_value = []
 

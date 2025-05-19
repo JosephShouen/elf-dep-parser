@@ -13,8 +13,16 @@ logger = logging.getLogger(__name__)
 
 
 def get_elf_dependencies(elf_path):
+    # check if file exists
+    if not os.path.isfile(elf_path):
+        raise ValueError(f"File not found or not accessible: {elf_path}")
+
+    # check if not elf file
+    with open(elf_path, "rb") as f:
+        if not f.read(4) == b"\x7fELF":
+            raise ValueError(f"Not an ELF file: {elf_path}")
+
     def collect_deps(filename, is_root=True):
-        # print("Filename: " + filename)
         if filename in unique_deps:
             return
         unique_deps.add(filename)
@@ -28,7 +36,6 @@ def get_elf_dependencies(elf_path):
                     for tag in section.iter_tags():
                         if tag.entry.d_tag == "DT_NEEDED":
                             deps.add(tag.needed)
-            # print("Deps: " + str(deps))
             for dep in deps:
                 dep_path = resolve_library_path(dep, filename)
                 if dep_path:
@@ -90,6 +97,7 @@ def get_ld_config_libs() -> Optional[dict]:
         return None
 
 
+@lru_cache(maxsize=128)
 def parse_ld_so_conf() -> List[str]:
     paths = []
 

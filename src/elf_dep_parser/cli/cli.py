@@ -1,5 +1,5 @@
 import argparse
-import os
+import sys
 
 from elf_dep_parser.parser import get_elf_dependencies
 
@@ -9,14 +9,22 @@ def main():
     parser.add_argument("elf_file", help="Путь к анализируемому ELF-файлу")
     args = parser.parse_args()
 
-    if not os.path.exists(args.elf_file):
-        print(f"Файл не найден: {args.elf_file}")
-        return
+    try:
+        deps = get_elf_dependencies(args.elf_file)
+        if not deps:
+            print("Не найдено внешних зависимостей")
+            return
 
-    deps = get_elf_dependencies(args.elf_file)
-    print("Библиотеки в порядке загрузки:")
-    for lib in reversed(deps):
-        print(f"- {lib}")
+        print("Библиотеки в порядке загрузки:")
+        for lib in reversed(deps):
+            print(f"- {lib}")
+
+    except ValueError as e:
+        print(f"Ошибка: {e}", file=sys.stderr)
+        sys.exit(1)
+    except Exception as e:
+        print(f"Неожиданная ошибка: {e}", file=sys.stderr)
+        sys.exit(2)
 
 
 if __name__ == "__main__":
