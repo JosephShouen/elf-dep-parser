@@ -1,11 +1,12 @@
-from elf_dep_parser.parser import get_elf_dependencies
 import argparse
 import os
+
+from elf_dep_parser.parser import get_elf_dependencies
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('elf_file', help='Путь к анализируемому ELF-файлу')
+    parser.add_argument("elf_file", help="Путь к анализируемому ELF-файлу")
     args = parser.parse_args()
 
     if not os.path.exists(args.elf_file):
