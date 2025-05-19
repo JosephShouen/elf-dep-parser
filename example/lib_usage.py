@@ -6,7 +6,7 @@ from elf_dep_parser.parser import get_elf_dependencies
 
 
 def main():
-    binary_path = "/bin/true"
+    binary_path = "/bin/ls"
 
     try:
         print(f"Анализируемый Elf: {binary_path}")

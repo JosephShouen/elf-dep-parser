@@ -60,11 +60,14 @@ python3 example/lib_usage.py
 ## Вывод
 
 ```console
-Анализируемый Elf: /bin/true
+Анализируемый Elf: /bin/ls
 
 Зависимости от верхнего уровня в нижнему:
-1. libc.so.6
-2. ld-linux-x86-64.so.2
+1. libselinux.so.1
+2. libpcre2-8.so.0.11.2
+3. libc.so.6
+4. ld-linux-x86-64.so.2
 
-Всего зависимостей: 2
+Всего зависимостей: 4
+
 ```
