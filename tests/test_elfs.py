@@ -21,14 +21,32 @@ minimal_elf = bytes.fromhex(
 
 class TestRealElf(unittest.TestCase):
     def test_real_elf(self):
-        """Тест для Elf файла /bin/true"""
+        """
+        Тест для Elf файла /bin/true
+        Проверяет порядок зависимостей
+        Для /bin/true это должен быть libc.so.6 и ld-linux*
+        ld-linux можно различаться для разных архитектур,
+        поэтому проверяется отдельно
+        """
         test_file = "/bin/true"
+        true_deps_count = 2
         if not os.path.exists(test_file):
             self.skipTest(f"{test_file} не найден в системе")
 
         deps = get_elf_dependencies(test_file)
-        self.assertIn(
-            "libc.so.6", " ".join(deps), f"{test_file} должен зависеть от libc"
+        self.assertEqual(
+            deps[0],
+            "libc.so.6",
+            f"Первая зависимость {test_file} должна быть libc.so.6",
+        )
+        self.assertTrue(
+            deps[1].startswith("ld-linux"),
+            f"Вторая зависимость {test_file} должна быть ld-linux* (получено: {deps[1]})",
+        )
+        self.assertEqual(
+            len(deps),
+            true_deps_count,
+            f"Ожидаемое количество зависимостей: {true_deps_count} (получено: {len(deps)})",
         )
 
 
@@ -43,8 +61,7 @@ class TestPureElfNoDeps(unittest.TestCase):
 
             deps = get_elf_dependencies(str(elf_path))
             self.assertEqual(
-                deps, [],
-                f"Ожидался пустой список зависимостей, получено: {deps}"
+                deps, [], f"Ожидался пустой список зависимостей, получено: {deps}"
             )
 
 
