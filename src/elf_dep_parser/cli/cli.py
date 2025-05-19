@@ -1,3 +1,5 @@
+"""CLI приложение для поиска зависимостей Elf файла"""
+
 import argparse
 import sys
 
@@ -16,7 +18,7 @@ def main():
             return
 
         print("Библиотеки в порядке загрузки:")
-        for lib in reversed(deps):
+        for lib in deps:
             print(f"- {lib}")
 
     except ValueError as e:

@@ -1,3 +1,5 @@
+"""Тест CLI приложения"""
+
 import io
 import sys
 import unittest
@@ -9,6 +11,7 @@ from elf_dep_parser.cli.cli import main
 class TestCLIIntegration(unittest.TestCase):
     @patch("elf_dep_parser.cli.cli.get_elf_dependencies")
     def test_success_cli(self, mock_parser):
+        """Тест CLI приложения на примере elf файла /bin/true"""
         mock_parser.return_value = ["libc.so.6"]
         test_args = ["prog", "/bin/true"]
         captured_output = io.StringIO()
@@ -28,6 +31,7 @@ class TestCLIIntegration(unittest.TestCase):
 
     @patch("elf_dep_parser.cli.cli.get_elf_dependencies")
     def test_cli_invalid_elf(self, mock_parser):
+        """Тест CLI приложения для invalid elf"""
         mock_parser.side_effect = ValueError("Not an ELF file")
         test_args = ["prog", "/not/an/elf"]
 

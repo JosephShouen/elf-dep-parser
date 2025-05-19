@@ -1,3 +1,5 @@
+"""Модуль для поиска зависимостей Elf файла."""
+
 import glob
 import logging
 import os
@@ -12,7 +14,20 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def get_elf_dependencies(elf_path):
+def get_elf_dependencies(elf_path: str) -> list[str]:
+    """
+    Рекурсивный поиск всех динамических зависимостей Elf файла
+
+    args:
+        elf_path: путь к Elf файлу
+
+    Returns:
+        Список зависимостей от верхнего уровня к нижнему
+
+    Raises:
+        ValueError: файл не найден/не Elf файл
+    """
+
     # check if file exists
     if not os.path.isfile(elf_path):
         raise ValueError(f"File not found or not accessible: {elf_path}")
@@ -43,16 +58,27 @@ def get_elf_dependencies(elf_path):
             if not is_root:
                 result.append(os.path.basename(filename))
 
-    unique_deps = set()
-    result = []
+    unique_deps: set[str] = set()
+    result: list[str] = []
     collect_deps(elf_path)
 
-    return result
+    return result[::-1]
 
 
 # только распространенные архитектуры
 def detect_elf_architecture(elf_path: str) -> str:
-    ARCH_MAP = {
+    """
+    Определение архитектуры у Elf файла
+    Поддерживаемые: x86-64, x86, arm, arm64
+
+    args:
+        elf_path: путь к Elf файлу
+
+    Returns:
+        Архитектуру комплияции Elf файла
+    """
+
+    arch_map = {
         "EM_X86_64": "x86-64",
         "EM_386": "x86",
         "EM_ARM": "arm",
@@ -62,10 +88,21 @@ def detect_elf_architecture(elf_path: str) -> str:
     with open(elf_path, "rb") as f:
         elf = ELFFile(f)
         machine = elf.header["e_machine"]
-        return ARCH_MAP.get(machine, "unknown")
+        return arch_map.get(machine, "unknown")
 
 
 def get_arch_specific_paths(arch: str) -> List[str]:
+    """
+    Определение стандартных путей для библиотек
+    в зависимости от архитектуры
+
+    args:
+        arch: архитектура Elf файла
+
+    Returns:
+        Список стандратных путей для заданной архитектуры
+    """
+
     base_paths = {
         "x86-64": [
             "/lib/x86_64-linux-gnu",
@@ -82,6 +119,13 @@ def get_arch_specific_paths(arch: str) -> List[str]:
 
 
 def get_ld_config_libs() -> Optional[dict]:
+    """
+    Поиск путей для библиотек посредством ldconfig
+
+    Returns:
+        Список библиотек с путями установки/None
+    """
+
     try:
         result = subprocess.run(
             ["ldconfig", "-p"], capture_output=True, text=True, check=True
@@ -99,6 +143,13 @@ def get_ld_config_libs() -> Optional[dict]:
 
 @lru_cache(maxsize=128)
 def parse_ld_so_conf() -> List[str]:
+    """
+    Поиск путей для библиотек посредством парсинга ld.so.conf
+
+    Returns:
+        Список библиотек с путями установки
+    """
+
     paths = []
 
     def read_conf(filepath: str):
@@ -123,6 +174,17 @@ def parse_ld_so_conf() -> List[str]:
 
 @lru_cache(maxsize=1024)
 def resolve_library_path(libname: str, elf_path: str) -> Optional[str]:
+    """
+    Поиск путей установки либы
+
+    args:
+        libname: имя Elf файла
+        elf_path: путь к Elf файлу
+
+    Returns:
+        Путь установки библиотеки/Nonte
+    """
+
     # check arch
     arch = detect_elf_architecture(elf_path)
 

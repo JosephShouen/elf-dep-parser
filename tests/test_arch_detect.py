@@ -1,3 +1,5 @@
+"""Тест определения архитектуры Elf файла"""
+
 import unittest
 from unittest.mock import mock_open, patch
 
@@ -9,19 +11,23 @@ from elf_dep_parser.parser import (detect_elf_architecture,
 
 class TestArchPaths(unittest.TestCase):
     def test_x86_64_paths(self):
+        """Тест для x86-64"""
         paths = get_arch_specific_paths("x86-64")
         self.assertIn("/lib/x86_64-linux-gnu", paths)
         self.assertIn("/lib64", paths)
 
     def test_unknown_arch(self):
+        """Тест для архитектуры, отличной от x86/x86-64/arm/arm64"""
         paths = get_arch_specific_paths("unknown_arch")
         self.assertEqual(paths, ["/lib", "/usr/lib", "/lib64", "/usr/lib64"])
 
     def test_arm64_paths(self):
+        """Тест для arm64"""
         paths = get_arch_specific_paths("arm64")
         self.assertIn("/lib/aarch64-linux-gnu", paths)
 
     def test_detect_elf_architecture_invalid_file(self):
+        """Тест для invalid elf"""
         with patch("builtins.open", mock_open(read_data=b"NOT_ELF")):
             with self.assertRaises(ELFError):
                 detect_elf_architecture("invalid_path")

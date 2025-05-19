@@ -1,3 +1,5 @@
+"""Тест функций поиска путей Elf'ов get_ld_config_libs и parse_ld_so_conf"""
+
 import unittest
 from unittest.mock import MagicMock, mock_open, patch
 
@@ -6,6 +8,7 @@ from elf_dep_parser.parser import get_ld_config_libs, parse_ld_so_conf
 
 class TestLdConfig(unittest.TestCase):
     def test_get_ld_config_libs_empty_output(self):
+        """Тест ldconfig с пустым результатом"""
         mock_result = MagicMock()
         mock_result.stdout = ""
 
@@ -18,6 +21,7 @@ class TestParseLdSoConf(unittest.TestCase):
     @patch("glob.glob")
     @patch("builtins.open", mock_open(read_data=""))
     def test_empty_configs(self, mock_glob):
+        """Тест парсинга ld.so.conf с пустым результатом"""
         mock_glob.return_value = []
 
         result = parse_ld_so_conf()

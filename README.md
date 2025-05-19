@@ -45,8 +45,7 @@ print(f"Dependencies: {deps}")
 
 ## Пример использования
 
-Готовый минимальный пример расположен в example/lib_usage.py.  
-Запуск:
+Готовый минимальный пример расположен в example/lib_usage.py. Запуск:  
 ```bash
 python3 example/lib_usage.py
 ```
