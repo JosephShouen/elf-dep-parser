@@ -17,7 +17,7 @@
 ```bash
 git clone https://github.com/JosephShouen/elf-dep-parser.git
 cd elf-dep-parser
-pip install -e .
+pip install .
 ```
 
 ## CLI
@@ -25,7 +25,17 @@ pip install -e .
 elf_dep_parser /path/to/elf
 ```
 
+## Пример вывода CLI
+
+```console
+Найдены зависимости:
+- libc.so.6
+- libpthread.so.0
+- libdl.so.2
+```
+
 ## Библиотека
+
 ```python
 from elf_dep_parser.parser import get_elf_dependencies
 
@@ -33,11 +43,22 @@ deps = get_elf_dependencies("/path/to/elf")
 print(f"Dependencies: {deps}")
 ```
 
-## Пример вывода
+## Пример использования
+
+Готовый минимальный пример расположен в example/lib_usage.py.  
+Запуск:
+```bash
+python3 example/lib_usage.py
+```
+
+## Вывод
 
 ```console
-Найдены зависимости:
-- libc.so.6
-- libpthread.so.0
-- libdl.so.2
+Анализируемый Elf: /bin/true
+
+Зависимости от верхнего уровня в нижнему:
+1. libc.so.6
+2. ld-linux-x86-64.so.2
+
+Всего зависимостей: 2
 ```
