@@ -27,7 +27,7 @@ elf_dep_parser /path/to/elf
 
 ## Библиотека
 ```python
-from elf_dep_parser import get_elf_dependencies
+from elf_dep_parser.parser import get_elf_dependencies
 
 deps = get_elf_dependencies("/path/to/elf")
 print(f"Dependencies: {deps}")
