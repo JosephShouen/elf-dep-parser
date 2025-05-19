@@ -1,7 +1,7 @@
 import unittest
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import mock_open, patch
 
-from elftools.elf.elffile import ELFError, ELFFile
+from elftools.elf.elffile import ELFError
 
 from elf_dep_parser.parser import (detect_elf_architecture,
                                    get_arch_specific_paths)

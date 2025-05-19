@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import MagicMock, mock_open, patch
+from unittest.mock import patch
 
 from elf_dep_parser.parser import resolve_library_path
 

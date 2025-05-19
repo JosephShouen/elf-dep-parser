@@ -6,6 +6,20 @@ build-backend = "setuptools.build_meta"
 name = "elf_dep_parser"
 version = "0.1.0"
 description = "Elf dependencies parser"
+authors = [{name = "Eugene Fomin", email = "egfomin@yahoo.com"}]
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pyelftools>=0.29",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=3.0",
+    "mypy>=1.0",
+    "flake8>=5.0",
+]
 
 [project.scripts]
 elf_dep_parser = "elf_dep_parser.cli.cli:main"

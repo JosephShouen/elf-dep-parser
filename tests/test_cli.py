@@ -1,7 +1,7 @@
 import io
 import sys
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 from elf_dep_parser.cli.cli import main
 
